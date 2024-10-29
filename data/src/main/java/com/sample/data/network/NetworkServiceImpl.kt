@@ -1,7 +1,7 @@
 package com.sample.data.network
 
-import com.sample.data.model.ProductModelData
-import com.sample.domain.model.Product
+import com.sample.data.model.ProductListResponse
+import com.sample.domain.model.ProductListModel
 import com.sample.domain.network.NetworkService
 import com.sample.domain.network.ResultWrapper
 import io.ktor.client.HttpClient
@@ -17,19 +17,19 @@ import io.ktor.http.Parameters
 import io.ktor.http.contentType
 
 class NetworkServiceImpl(val client: HttpClient) : NetworkService {
-    private val baseUrl = "https://fakestoreapi.com"
-    override suspend fun getProducts(category: String?): ResultWrapper<List<Product>> {
+    private val baseUrl = "https://ecommerce-ktor-4641e7ff1b63.herokuapp.com"
+    override suspend fun getProducts(category: Int?): ResultWrapper<ProductListModel> {
         val url =
             if (category != null) "$baseUrl/products/category/$category" else "$baseUrl/products"
         return makeHttpRequest(url = url,
             method = HttpMethod.Get,
-            mapper = { dataModels: List<ProductModelData> ->
-                dataModels.map { it.toProduct() }
+            mapper = { dataModels: ProductListResponse ->
+                dataModels.toProductList()
             })
     }
 
     override suspend fun getCategories(): ResultWrapper<List<String>> {
-        val url = "$baseUrl/products/categories"
+        val url = "$baseUrl/categories"
         return makeHttpRequest<List<String>, List<String>>(
             url = url,
             method = HttpMethod.Get,

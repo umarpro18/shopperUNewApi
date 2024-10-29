@@ -9,14 +9,14 @@ data class ProductModelData(
     val title: String,
     val price: Double,
     val description: String,
-    val category: String,
+    val categoryId: Int,
     val image: String
 ) {
     fun toProduct() = Product(
         id = id,
         title = title,
         price = price,
-        category = category,
+        categoryId = categoryId,
         description = description,
         image = image
     )

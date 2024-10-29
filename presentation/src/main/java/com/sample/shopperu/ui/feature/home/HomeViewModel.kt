@@ -25,8 +25,8 @@ class HomeViewModel(
     fun getAllProducts() {
         viewModelScope.launch {
             _uiState.value = HomeScreenUIEvents.Loading
-            val featured = getProducts("electronics")
-            val popularProducts = getProducts("jewelery")
+            val featured = getProducts(1)
+            val popularProducts = getProducts(2)
             val categories = getCategories()
             if (featured.isEmpty() && popularProducts.isEmpty() && categories.isEmpty()) {
                 _uiState.value = HomeScreenUIEvents.Error("Retry, Something has happened..")
@@ -37,12 +37,12 @@ class HomeViewModel(
         }
     }
 
-    suspend fun getProducts(category: String?): List<Product> {
+    suspend fun getProducts(category: Int?): List<Product> {
         getProductUseCase.execute(category).let { result ->
             when (result) {
                 is ResultWrapper.Success -> {
                     val data = (result).value
-                    return data
+                    return data.products
                 }
 
                 is ResultWrapper.Failure -> {
