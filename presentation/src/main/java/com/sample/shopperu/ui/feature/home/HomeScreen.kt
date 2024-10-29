@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.sample.domain.model.Category
 import com.sample.domain.model.Product
 import com.sample.shopperu.R
 import org.koin.androidx.compose.koinViewModel
@@ -58,7 +59,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
     }
 
     val categories = remember {
-        mutableStateOf<List<String>>(emptyList())
+        mutableStateOf<List<Category>>(emptyList())
     }
 
     val isLoading = remember {
@@ -137,7 +138,7 @@ fun DisplayError(error: String?) {
 fun HomeContent(
     featured: List<Product>,
     popularProducts: List<Product>,
-    categories: List<String>,
+    categories: List<Category>,
     isLoading: Boolean,
     error: String?
 ) {
@@ -235,14 +236,14 @@ fun SearchBar(value: String, onTextChanged: (String) -> Unit) {
 
 
 @Composable
-fun CategoryRow(categories: List<String>) {
+fun CategoryRow(categories: List<Category>) {
     LazyRow(
         modifier = Modifier
             .padding(horizontal = 8.dp)
     ) {
         items(categories) { category ->
             Text(
-                text = category.replaceFirstChar { it.uppercase() },
+                text = category.title.replaceFirstChar { it.uppercase() },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.LightGray,

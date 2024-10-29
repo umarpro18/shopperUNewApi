@@ -1,6 +1,7 @@
 package com.sample.data.network
 
 import com.sample.data.model.ProductListResponse
+import com.sample.domain.model.CategoryListModel
 import com.sample.domain.model.ProductListModel
 import com.sample.domain.network.NetworkService
 import com.sample.domain.network.ResultWrapper
@@ -15,6 +16,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.Parameters
 import io.ktor.http.contentType
+import io.ktor.utils.io.InternalAPI
 
 class NetworkServiceImpl(val client: HttpClient) : NetworkService {
     private val baseUrl = "https://ecommerce-ktor-4641e7ff1b63.herokuapp.com"
@@ -28,15 +30,18 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
             })
     }
 
-    override suspend fun getCategories(): ResultWrapper<List<String>> {
+    override suspend fun getCategories(): ResultWrapper<CategoryListModel> {
         val url = "$baseUrl/categories"
-        return makeHttpRequest<List<String>, List<String>>(
+        return makeHttpRequest(
             url = url,
             method = HttpMethod.Get,
-            mapper = null
+            mapper = {
+                dataModels: com.sample.data.model.CategoryListResponse -> dataModels.toCategoryList()
+            }
         )
     }
 
+    @OptIn(InternalAPI::class)
     suspend inline fun <reified T, R> makeHttpRequest(
         url: String,
         method: HttpMethod,

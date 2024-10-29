@@ -8,6 +8,6 @@ data class ProductListResponse(
     val `data`: List<ProductModelData>,
 ) {
     fun toProductList() = ProductListModel(
-        data = `data`.map { it.toProduct() }
+        products = `data`.map { it.toProduct() }
     )
 }

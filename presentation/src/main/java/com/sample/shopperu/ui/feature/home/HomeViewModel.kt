@@ -2,6 +2,7 @@ package com.sample.shopperu.ui.feature.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sample.domain.model.Category
 import com.sample.domain.model.Product
 import com.sample.domain.network.ResultWrapper
 import com.sample.domain.usecase.GetCategoriesUseCase
@@ -52,12 +53,12 @@ class HomeViewModel(
         }
     }
 
-    suspend fun getCategories(): List<String> {
+    suspend fun getCategories(): List<Category> {
         getCategoriesUseCase.execute().let { result ->
             when (result) {
                 is ResultWrapper.Success -> {
                     val data = (result).value
-                    return data
+                    return data.data
                 }
 
                 is ResultWrapper.Failure -> {
@@ -80,6 +81,6 @@ sealed class HomeScreenUIEvents {
 data class UIState(
     val featured: List<Product>,
     val popularProducts: List<Product>,
-    val categories: List<String>
+    val categories: List<Category>
 )
 
