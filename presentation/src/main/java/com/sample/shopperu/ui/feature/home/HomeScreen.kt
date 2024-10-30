@@ -5,6 +5,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,8 @@ import coil.compose.AsyncImage
 import com.sample.domain.model.Category
 import com.sample.domain.model.Product
 import com.sample.shopperu.R
+import com.sample.shopperu.navigation.ProductDetails
+import com.sample.shopperu.uimodel.UiProductModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -106,7 +109,8 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
                 popularProducts.value,
                 categories.value,
                 isLoading.value,
-                error.value
+                error.value,
+                onClick = { navController.navigate(ProductDetails(UiProductModel.fromProduct(it))) }
             )
         }
     }
@@ -144,7 +148,8 @@ fun HomeContent(
     popularProducts: List<Product>,
     categories: List<Category>,
     isLoading: Boolean,
-    error: String?
+    error: String?,
+    onClick: (Product) -> Unit
 ) {
     LazyColumn {
         item {
@@ -158,11 +163,11 @@ fun HomeContent(
         }
         item {
             if (featured.isNotEmpty()) {
-                HomeProductRow(featured, "Featured")
+                HomeProductRow(featured, "Featured", onClick = onClick)
                 Spacer(modifier = Modifier.size(16.dp))
             }
             if (popularProducts.isNotEmpty()) {
-                HomeProductRow(popularProducts, "Popular")
+                HomeProductRow(popularProducts, "Popular", onClick = onClick)
             }
         }
     }
@@ -274,7 +279,7 @@ fun CategoryRow(categories: List<Category>) {
 
 
 @Composable
-fun HomeProductRow(products: List<Product>, title: String) {
+fun HomeProductRow(products: List<Product>, title: String, onClick: (Product) -> Unit) {
     Column {
         Box(
             modifier = Modifier
@@ -312,7 +317,7 @@ fun HomeProductRow(products: List<Product>, title: String) {
                     visible = isVisible.value,
                     enter = fadeIn() + expandVertically()
                 ) {
-                    ProductItem(product)
+                    ProductItem(product, onClick = onClick)
                 }
             }
         }
@@ -321,17 +326,18 @@ fun HomeProductRow(products: List<Product>, title: String) {
 }
 
 @Composable
-fun ProductItem(product: Product) {
+fun ProductItem(productValue: Product, onClick: (Product) -> Unit) {
     Card(
         modifier = Modifier
             .padding(horizontal = 8.dp)
-            .size(width = 126.dp, height = 144.dp),
+            .size(width = 126.dp, height = 144.dp)
+            .clickable { onClick(productValue) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.3f))
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
-                model = product.image,
+                model = productValue.image,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -341,7 +347,7 @@ fun ProductItem(product: Product) {
             Spacer(modifier = Modifier.size(8.dp))
 
             Text(
-                text = product.title,
+                text = productValue.title,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 fontWeight = FontWeight.SemiBold,
@@ -350,7 +356,7 @@ fun ProductItem(product: Product) {
             )
 
             Text(
-                text = "$${product.price}",
+                text = "$${productValue.price}",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(horizontal = 8.dp),
                 color = MaterialTheme.colorScheme.primary,
