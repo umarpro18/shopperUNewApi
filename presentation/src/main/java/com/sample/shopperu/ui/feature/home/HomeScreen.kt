@@ -44,17 +44,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.sample.domain.model.Category
 import com.sample.domain.model.Product
 import com.sample.shopperu.R
-import com.sample.shopperu.navigation.ProductDetails
-import com.sample.shopperu.uimodel.UiProductModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinViewModel()) {
+fun HomeScreen(onClick: (Product) -> Unit, viewModel: HomeViewModel = koinViewModel()) {
     val uiState = viewModel.uiState.collectAsState()
 
     val featured = remember {
@@ -110,7 +107,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel = koinView
                 categories.value,
                 isLoading.value,
                 error.value,
-                onClick = { navController.navigate(ProductDetails(UiProductModel.fromProduct(it))) }
+                onClick = onClick
             )
         }
     }

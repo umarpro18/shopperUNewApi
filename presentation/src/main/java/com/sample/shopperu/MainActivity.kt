@@ -29,10 +29,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.sample.shopperu.navigation.CartScreen
 import com.sample.shopperu.navigation.HomeScreen
-import com.sample.shopperu.navigation.ProductDetails
+import com.sample.shopperu.navigation.ProductDetailRoute
 import com.sample.shopperu.navigation.ProfileScreen
 import com.sample.shopperu.navigation.productNavType
 import com.sample.shopperu.ui.feature.home.HomeScreen
+import com.sample.shopperu.ui.feature.product_detail.ProductDetailScreen
 import com.sample.shopperu.ui.theme.ShopperUTheme
 import com.sample.shopperu.uimodel.UiProductModel
 import kotlin.reflect.typeOf
@@ -57,7 +58,15 @@ class MainActivity : ComponentActivity() {
                     ) {
                         NavHost(navController = navController, startDestination = HomeScreen) {
                             composable<HomeScreen> {
-                                HomeScreen(navController)
+                                HomeScreen(onClick = { product ->
+                                    navController.navigate(
+                                        ProductDetailRoute(
+                                            UiProductModel.fromProduct(
+                                                product
+                                            )
+                                        )
+                                    )
+                                })
                             }
                             composable<CartScreen> {
                                 Box(
@@ -77,17 +86,11 @@ class MainActivity : ComponentActivity() {
                                     Text(text = "Welcome to profile!")
                                 }
                             }
-                            composable<ProductDetails>(
+                            composable<ProductDetailRoute>(
                                 typeMap = mapOf(typeOf<UiProductModel>() to productNavType)
                             ) {
-                                val productRoute = it.toRoute<ProductDetails>()
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(text = "Welcome to ProductDetails! ${productRoute.product.title}")
-                                }
+                                val arguments = it.toRoute<ProductDetailRoute>()
+                                ProductDetailScreen(arguments.product)
                             }
                         }
                     }
