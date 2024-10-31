@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,11 +48,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ShopperUTheme {
+                val shouldShowBottomBar = remember {
+                    mutableStateOf(true)
+                }
                 val navController = rememberNavController()
                 Scaffold(modifier = Modifier
                     .fillMaxSize(),
                     bottomBar = {
-                        BottomNavigationBar(navController)
+                        AnimatedVisibility(visible = shouldShowBottomBar.value) {
+                            BottomNavigationBar(navController)
+                        }
                     }
                 ) {
                     Surface(
@@ -67,6 +76,7 @@ class MainActivity : ComponentActivity() {
                                         )
                                     )
                                 })
+                                shouldShowBottomBar.value = true
                             }
                             composable<CartScreen> {
                                 Box(
@@ -76,6 +86,7 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Text(text = "Welcome to cart!")
                                 }
+                                shouldShowBottomBar.value = true
                             }
                             composable<ProfileScreen> {
                                 Box(
@@ -85,12 +96,14 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Text(text = "Welcome to profile!")
                                 }
+                                shouldShowBottomBar.value = true
                             }
                             composable<ProductDetailRoute>(
                                 typeMap = mapOf(typeOf<UiProductModel>() to productNavType)
                             ) {
                                 val arguments = it.toRoute<ProductDetailRoute>()
                                 ProductDetailScreen(arguments.product)
+                                shouldShowBottomBar.value = false
                             }
                         }
                     }
