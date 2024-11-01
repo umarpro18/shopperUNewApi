@@ -1,7 +1,9 @@
 package com.sample.shopperu.ui.feature.product_detail
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,11 +21,15 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,6 +43,34 @@ fun ProductDetailScreen(
     product: UiProductModel,
     viewModel: ProductDetailViewModel = koinViewModel()
 ) {
+    val loading = remember {
+        mutableStateOf(false)
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        val uiState = viewModel.uiState.collectAsState()
+        when (uiState.value) {
+            is ProductDetailUIEvents.Loading -> {
+                loading.value = true
+            }
+
+            is ProductDetailUIEvents.Success -> {
+                val result = uiState.value as (ProductDetailUIEvents.Success)
+                Toast.makeText(LocalContext.current, result.data, Toast.LENGTH_SHORT).show()
+                loading.value = true
+            }
+
+            is ProductDetailUIEvents.Error -> {
+                val result = uiState.value as (ProductDetailUIEvents.Error)
+                Toast.makeText(LocalContext.current, result.message, Toast.LENGTH_SHORT).show()
+                loading.value = true
+            }
+
+            else -> {
+                loading.value = true
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,6 +92,7 @@ fun ProductDetailScreen(
                     .clip(CircleShape)
                     .background(Color.LightGray.copy(alpha = 0.3f))
                     .padding(8.dp)
+                    .clickable { },
             )
             Image(
                 painter = painterResource(R.drawable.ic_favorite),
@@ -68,6 +103,7 @@ fun ProductDetailScreen(
                     .clip(CircleShape)
                     .background(Color.LightGray.copy(alpha = 0.3f))
                     .padding(8.dp)
+                    .clickable { }
             )
         }
         Spacer(Modifier.size(8.dp))
@@ -95,9 +131,11 @@ fun ProductDetailScreen(
                 )
             }
 
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Image(painter = painterResource(R.drawable.ic_star), contentDescription = null)
                 Text(
                     text = "(10 Reviews)",
@@ -134,7 +172,10 @@ fun ProductDetailScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Button(onClick = {}, modifier = Modifier.weight(1f)) {
+                Button(
+                    onClick = { viewModel.addProductToCart(product) },
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text = "Buy Now",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
@@ -143,7 +184,7 @@ fun ProductDetailScreen(
                 }
                 Spacer(Modifier.size(16.dp))
                 IconButton(
-                    onClick = {},
+                    onClick = { viewModel.addProductToCart(product) },
                     colors = IconButtonDefaults.iconButtonColors()
                         .copy(containerColor = Color.LightGray.copy(alpha = 0.3f))
                 ) {

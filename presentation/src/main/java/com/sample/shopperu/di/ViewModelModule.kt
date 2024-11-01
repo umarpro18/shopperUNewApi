@@ -11,6 +11,6 @@ val viewModelModule = module {
     }
 
     viewModel() {
-        ProductDetailViewModel()
+        ProductDetailViewModel(get())
     }
 }
