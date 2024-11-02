@@ -9,6 +9,7 @@ interface NetworkService {
     suspend fun getProducts(category: Int?): ResultWrapper<ProductListModel>
     suspend fun getCategories(): ResultWrapper<CategoryListModel>
     suspend fun addProductToCart(request: CartRequestModel): ResultWrapper<CartListModel>
+    suspend fun getCartList(): ResultWrapper<CartListModel>
 }
 
 sealed class ResultWrapper<out T> {

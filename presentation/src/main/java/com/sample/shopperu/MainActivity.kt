@@ -36,6 +36,7 @@ import com.sample.shopperu.navigation.HomeScreen
 import com.sample.shopperu.navigation.ProductDetailRoute
 import com.sample.shopperu.navigation.ProfileScreen
 import com.sample.shopperu.navigation.productNavType
+import com.sample.shopperu.ui.feature.cart.CartListScreen
 import com.sample.shopperu.ui.feature.home.HomeScreen
 import com.sample.shopperu.ui.feature.product_detail.ProductDetailScreen
 import com.sample.shopperu.ui.theme.ShopperUTheme
@@ -79,13 +80,7 @@ class MainActivity : ComponentActivity() {
                                 shouldShowBottomBar.value = true
                             }
                             composable<CartScreen> {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(text = "Welcome to cart!")
-                                }
+                                CartListScreen()
                                 shouldShowBottomBar.value = true
                             }
                             composable<ProfileScreen> {

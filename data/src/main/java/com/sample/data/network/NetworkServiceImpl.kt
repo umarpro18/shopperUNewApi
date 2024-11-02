@@ -56,6 +56,17 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
         )
     }
 
+    override suspend fun getCartList(): ResultWrapper<CartListModel> {
+        val url = "$baseUrl/cart/1"
+        return makeHttpRequest(
+            url = url,
+            method = HttpMethod.Get,
+            mapper = { cartModel: CartListResponse ->
+                cartModel.toCartList()
+            }
+        )
+    }
+
     suspend inline fun <reified T, R> makeHttpRequest(
         url: String,
         method: HttpMethod,

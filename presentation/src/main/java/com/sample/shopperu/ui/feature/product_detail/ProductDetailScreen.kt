@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,8 +47,10 @@ fun ProductDetailScreen(
     val loading = remember {
         mutableStateOf(false)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        val uiState = viewModel.uiState.collectAsState()
+
+    val uiState = viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(uiState.value) {
         when (uiState.value) {
             is ProductDetailUIEvents.Loading -> {
                 loading.value = true
@@ -55,13 +58,13 @@ fun ProductDetailScreen(
 
             is ProductDetailUIEvents.Success -> {
                 val result = uiState.value as (ProductDetailUIEvents.Success)
-                Toast.makeText(LocalContext.current, result.data, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, result.data, Toast.LENGTH_SHORT).show()
                 loading.value = true
             }
 
             is ProductDetailUIEvents.Error -> {
                 val result = uiState.value as (ProductDetailUIEvents.Error)
-                Toast.makeText(LocalContext.current, result.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
                 loading.value = true
             }
 

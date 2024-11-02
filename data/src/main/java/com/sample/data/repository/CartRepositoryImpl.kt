@@ -10,4 +10,8 @@ class CartRepositoryImpl(val networkService: NetworkService) : CartRepository {
     override suspend fun addProductToCart(request: CartRequestModel): ResultWrapper<CartListModel> {
         return networkService.addProductToCart(request)
     }
+
+    override suspend fun getCartList(): ResultWrapper<CartListModel> {
+        return networkService.getCartList()
+    }
 }

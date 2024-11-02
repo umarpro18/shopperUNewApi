@@ -6,4 +6,6 @@ import com.sample.domain.network.ResultWrapper
 
 interface CartRepository {
     suspend fun addProductToCart(request: CartRequestModel): ResultWrapper<CartListModel>
+
+    suspend fun getCartList(): ResultWrapper<CartListModel>
 }
