@@ -110,10 +110,10 @@ fun CartContent(cartList: List<CartModel>, loading: Boolean, error: String?) {
                 }
 
                 if (loading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.CenterHorizontally)
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier
