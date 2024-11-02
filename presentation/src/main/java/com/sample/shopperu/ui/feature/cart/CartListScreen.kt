@@ -82,61 +82,67 @@ fun CartListScreen(viewModel: CartListViewModel = koinViewModel()) {
 
 @Composable
 fun CartContent(cartList: List<CartModel>, loading: Boolean, error: String?) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Cart",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                Spacer(modifier = Modifier.size(8.dp))
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
 
-                val shouldShowList = (!loading && error == null)
-                AnimatedVisibility(
-                    visible = shouldShowList,
-                    enter = fadeIn(),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    LazyColumn {
-                        items(cartList) { item ->
-                            CartItem(item)
-                        }
-                    }
-                }
+        Text(
+            text = "Cart",
+            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
-                if (loading) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(48.dp)
-                        )
-                    }
-                }
+        Spacer(modifier = Modifier.size(16.dp))
 
-                if (error != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(
-                            text = error,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Red
-                        )
-                    }
+        val shouldShowList = (!loading && error == null)
+        AnimatedVisibility(
+            visible = shouldShowList,
+            enter = fadeIn(),
+            modifier = Modifier.weight(1f)
+        ) {
+            LazyColumn {
+                items(cartList) { item ->
+                    CartItem(item)
                 }
             }
         }
+
+        if (loading) {
+            LoadingContent()
+        }
+
+        if (error != null) {
+            ErrorContent(error)
+        }
+    }
+}
+
+@Composable
+fun LoadingContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(48.dp)
+                .align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+fun ErrorContent(error: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Text(
+            text = error,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Red,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }
 
@@ -147,54 +153,68 @@ fun CartItem(item: CartModel) {
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(Color.LightGray.copy(alpha = 0.3f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
 
         AsyncImage(
             model = item.imageUrl,
-            contentDescription = null,
+            contentDescription = "Product Image",
             modifier = Modifier.size(126.dp, 96.dp),
             contentScale = ContentScale.Crop
         )
+
         Spacer(modifier = Modifier.size(8.dp))
 
         Column(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
+                .padding(vertical = 8.dp) // Added padding to replace Spacers
         ) {
-            Spacer(modifier = Modifier.size(8.dp))
             Text(
                 text = item.productName,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
             )
-            Spacer(modifier = Modifier.size(4.dp))
+            Spacer(modifier = Modifier.size(4.dp)) // Minor space between text lines
             Text(
                 text = "$${item.price}",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
         }
 
-        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.End) {
-
-            IconButton(onClick = {}) {
-                Image(painter = painterResource(R.drawable.ic_delete), contentDescription = null)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.End
+        ) {
+            IconButton(onClick = { /* Handle delete */ }) {
+                Image(
+                    painter = painterResource(R.drawable.ic_delete),
+                    contentDescription = "Delete Item"
+                )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = {}) {
-                    Image(painter = painterResource(R.drawable.ic_minus), contentDescription = null)
+                IconButton(onClick = { /* Decrease quantity */ }) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_minus),
+                        contentDescription = "Decrease Quantity"
+                    )
                 }
 
-                Text(text = item.quantity.toString())
+                Text(
+                    text = item.quantity.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-                IconButton(onClick = {}) {
-                    Image(painter = painterResource(R.drawable.ic_plus), contentDescription = null)
+                IconButton(onClick = { /* Increase quantity */ }) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_plus),
+                        contentDescription = "Increase Quantity"
+                    )
                 }
-
             }
         }
     }
-
 }
