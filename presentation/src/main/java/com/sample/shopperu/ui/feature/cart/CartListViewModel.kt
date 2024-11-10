@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sample.domain.model.CartModel
 import com.sample.domain.network.ResultWrapper
+import com.sample.domain.usecase.DeleteCartItemUseCase
 import com.sample.domain.usecase.GetCartListUseCase
 import com.sample.domain.usecase.UpdateCartItemQuantityUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class CartListViewModel(
     val cartListUseCase: GetCartListUseCase,
-    val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase
+    val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
+    val deleteCartItemUseCase: DeleteCartItemUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CartListScreenUIEvents>(CartListScreenUIEvents.Loading)
@@ -63,6 +65,19 @@ class CartListViewModel(
     }
 
     fun deleteCartItem(cartModel: CartModel) {
+        _uiState.value = CartListScreenUIEvents.Loading
+        viewModelScope.launch {
+            val result = deleteCartItemUseCase.execute(cartModel.id, 1)
+            when (result) {
+                is ResultWrapper.Success -> {
+                    _uiState.value = CartListScreenUIEvents.Success(result.value.data)
+                }
+
+                is ResultWrapper.Failure -> {
+                    _uiState.value = CartListScreenUIEvents.Error("Please try later!")
+                }
+            }
+        }
     }
 
 }

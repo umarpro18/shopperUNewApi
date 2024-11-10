@@ -12,4 +12,6 @@ interface CartRepository {
 
     suspend fun updateCartItemQuantity(cartModel: CartModel): ResultWrapper<CartListModel>
 
+    suspend fun deleteCartItem(cartItemId: Int, userId: Int): ResultWrapper<CartListModel>
+
 }

@@ -19,4 +19,11 @@ class CartRepositoryImpl(val networkService: NetworkService) : CartRepository {
     override suspend fun updateCartItemQuantity(cartModel: CartModel): ResultWrapper<CartListModel> {
         return networkService.updateCartItemQuantity(cartModel)
     }
+
+    override suspend fun deleteCartItem(
+        cartItemId: Int,
+        userId: Int
+    ): ResultWrapper<CartListModel> {
+        return networkService.deleteCartItem(cartItemId, userId)
+    }
 }
