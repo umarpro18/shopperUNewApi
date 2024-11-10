@@ -2,8 +2,10 @@ package com.sample.data.network
 
 import com.sample.data.model.AddToCartRequest
 import com.sample.data.model.CartListResponse
+import com.sample.data.model.CartModelData
 import com.sample.data.model.ProductListResponse
 import com.sample.domain.model.CartListModel
+import com.sample.domain.model.CartModel
 import com.sample.domain.model.CategoryListModel
 import com.sample.domain.model.ProductListModel
 import com.sample.domain.model.request.CartRequestModel
@@ -22,7 +24,7 @@ import io.ktor.http.Parameters
 import io.ktor.http.contentType
 
 class NetworkServiceImpl(val client: HttpClient) : NetworkService {
-    private val baseUrl = "https://ecommerce-ktor-4641e7ff1b63.herokuapp.com"
+    private val baseUrl = "https://ecommerce-ktor-4641e7ff1b63.herokuapp.com/v2"
     override suspend fun getProducts(category: Int?): ResultWrapper<ProductListModel> {
         val url =
             if (category != null) "$baseUrl/products/category/$category" else "$baseUrl/products"
@@ -61,6 +63,21 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
         return makeHttpRequest(
             url = url,
             method = HttpMethod.Get,
+            mapper = { cartModel: CartListResponse ->
+                cartModel.toCartList()
+            }
+        )
+    }
+
+    override suspend fun updateCartItemQuantity(cartModel: CartModel): ResultWrapper<CartListModel> {
+        val url = "$baseUrl/cart/1/${cartModel.id}"
+        return makeHttpRequest(
+            url = url,
+            method = HttpMethod.Put,
+            body = AddToCartRequest(
+                productId = cartModel.productId,
+                quantity = cartModel.quantity
+            ),
             mapper = { cartModel: CartListResponse ->
                 cartModel.toCartList()
             }

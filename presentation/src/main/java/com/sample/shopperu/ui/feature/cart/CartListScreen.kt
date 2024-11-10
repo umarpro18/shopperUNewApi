@@ -40,9 +40,9 @@ import com.sample.shopperu.R
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CartListScreen(viewModel: CartListViewModel = koinViewModel()) {
+fun CartListScreen(cartViewModel: CartListViewModel = koinViewModel()) {
 
-    val uiState = viewModel.uiState.collectAsState()
+    val uiState = cartViewModel.uiState.collectAsState()
     val cartList = remember {
         mutableStateOf(emptyList<CartModel>())
     }
@@ -77,20 +77,39 @@ fun CartListScreen(viewModel: CartListViewModel = koinViewModel()) {
             }
         }
     }
-    CartContent(cartList.value, loading.value, error.value)
+    CartContent(cartList.value, loading.value, error.value, cartViewModel)
 }
 
 @Composable
-fun CartContent(cartList: List<CartModel>, loading: Boolean, error: String?) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+fun CartContent(
+    cartList: List<CartModel>,
+    loading: Boolean,
+    error: String?,
+    cartViewModel: CartListViewModel
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
-        Text(
-            text = "Cart",
-            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_back),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.CenterStart)
+            )
+
+            Text(
+                text = "Cart",
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
 
         Spacer(modifier = Modifier.size(16.dp))
 
@@ -102,7 +121,11 @@ fun CartContent(cartList: List<CartModel>, loading: Boolean, error: String?) {
         ) {
             LazyColumn {
                 items(cartList) { item ->
-                    CartItem(item)
+                    CartItem(
+                        item,
+                        onIncrement = { cartViewModel.incrementQuantity(item) },
+                        onDecrement = { cartViewModel.decrementQuantity(item) },
+                        onDelete = { cartViewModel.deleteCartItem(item) })
                 }
             }
         }
@@ -147,7 +170,10 @@ fun ErrorContent(error: String) {
 }
 
 @Composable
-fun CartItem(item: CartModel) {
+fun CartItem(
+    item: CartModel, onIncrement: (CartModel) -> Unit,
+    onDecrement: (CartModel) -> Unit, onDelete: (CartModel) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,7 +213,7 @@ fun CartItem(item: CartModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.End
         ) {
-            IconButton(onClick = { /* Handle delete */ }) {
+            IconButton(onClick = { onDelete(item) }) {
                 Image(
                     painter = painterResource(R.drawable.ic_delete),
                     contentDescription = "Delete Item"
@@ -195,7 +221,7 @@ fun CartItem(item: CartModel) {
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { /* Decrease quantity */ }) {
+                IconButton(onClick = { onDecrement(item) }) {
                     Image(
                         painter = painterResource(R.drawable.ic_minus),
                         contentDescription = "Decrease Quantity"
@@ -208,7 +234,7 @@ fun CartItem(item: CartModel) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                IconButton(onClick = { /* Increase quantity */ }) {
+                IconButton(onClick = { onIncrement(item) }) {
                     Image(
                         painter = painterResource(R.drawable.ic_plus),
                         contentDescription = "Increase Quantity"

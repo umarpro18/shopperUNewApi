@@ -22,10 +22,8 @@ class ProductDetailViewModel(val addProductToCartUseCase: AddProductToCartUseCas
             val result = addProductToCartUseCase.execute(
                 CartRequestModel(
                     productId = product.id,
-                    productName = product.title,
                     price = product.price,
                     quantity = 1,
-                    userId = 1,
                 )
             )
 
