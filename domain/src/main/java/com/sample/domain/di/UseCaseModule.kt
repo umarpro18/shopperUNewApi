@@ -3,6 +3,7 @@ package com.sample.domain.di
 import com.sample.domain.usecase.AddProductToCartUseCase
 import com.sample.domain.usecase.DeleteCartItemUseCase
 import com.sample.domain.usecase.GetCartListUseCase
+import com.sample.domain.usecase.GetCartSummaryUseCase
 import com.sample.domain.usecase.GetCategoriesUseCase
 import com.sample.domain.usecase.GetProductUseCase
 import com.sample.domain.usecase.UpdateCartItemQuantityUseCase
@@ -15,4 +16,5 @@ val useCaseModule = module {
     factory { GetCartListUseCase(get()) }
     factory { UpdateCartItemQuantityUseCase(get()) }
     factory { DeleteCartItemUseCase(get()) }
+    factory { GetCartSummaryUseCase(get()) }
 }

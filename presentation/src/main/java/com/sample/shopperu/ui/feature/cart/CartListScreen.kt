@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +42,10 @@ import com.sample.shopperu.R
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CartListScreen(cartViewModel: CartListViewModel = koinViewModel()) {
+fun CartListScreen(
+    onCheckOutClick: () -> Unit,
+    cartViewModel: CartListViewModel = koinViewModel()
+) {
 
     val uiState = cartViewModel.uiState.collectAsState()
     val cartList = remember {
@@ -77,7 +82,7 @@ fun CartListScreen(cartViewModel: CartListViewModel = koinViewModel()) {
             }
         }
     }
-    CartContent(cartList.value, loading.value, error.value, cartViewModel)
+    CartContent(cartList.value, loading.value, error.value, cartViewModel, onCheckOutClick)
 }
 
 @Composable
@@ -85,7 +90,7 @@ fun CartContent(
     cartList: List<CartModel>,
     loading: Boolean,
     error: String?,
-    cartViewModel: CartListViewModel
+    cartViewModel: CartListViewModel, onCheckOutClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -111,21 +116,44 @@ fun CartContent(
             )
         }
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(8.dp))
 
         val shouldShowList = (!loading && error == null)
-        AnimatedVisibility(
-            visible = shouldShowList,
-            enter = fadeIn(),
-            modifier = Modifier.weight(1f)
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            LazyColumn {
-                items(cartList) { item ->
-                    CartItem(
-                        item,
-                        onIncrement = { cartViewModel.incrementQuantity(item) },
-                        onDecrement = { cartViewModel.decrementQuantity(item) },
-                        onDelete = { cartViewModel.deleteCartItem(item) })
+            AnimatedVisibility(
+                visible = shouldShowList,
+                enter = fadeIn(),
+                modifier = Modifier.weight(1f)
+            ) {
+                LazyColumn(modifier = Modifier.padding(8.dp)) {
+                    items(cartList) { item ->
+                        CartItem(
+                            item,
+                            onIncrement = { cartViewModel.incrementQuantity(item) },
+                            onDecrement = { cartViewModel.decrementQuantity(item) },
+                            onDelete = { cartViewModel.deleteCartItem(item) })
+                    }
+                }
+            }
+
+            Box {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 8.dp),
+                    onClick = { onCheckOutClick() },
+                    shape = RoundedCornerShape(24.dp),
+                ) {
+                    Text(
+                        text = "Checkout",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                    )
                 }
             }
         }

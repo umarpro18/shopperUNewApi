@@ -14,3 +14,6 @@ object ProfileScreen
 
 @Serializable
 data class ProductDetailRoute(val product: UiProductModel)
+
+@Serializable
+object CartSummaryRoute

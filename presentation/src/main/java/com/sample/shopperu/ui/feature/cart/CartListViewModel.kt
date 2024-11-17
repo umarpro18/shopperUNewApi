@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CartListViewModel(
-    val cartListUseCase: GetCartListUseCase,
-    val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
-    val deleteCartItemUseCase: DeleteCartItemUseCase
+    private val cartListUseCase: GetCartListUseCase,
+    private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
+    private val deleteCartItemUseCase: DeleteCartItemUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CartListScreenUIEvents>(CartListScreenUIEvents.Loading)
@@ -24,7 +24,7 @@ class CartListViewModel(
         getCartList()
     }
 
-    fun getCartList() {
+    private fun getCartList() {
         viewModelScope.launch {
             val result = cartListUseCase.execute()
             _uiState.value = CartListScreenUIEvents.Loading
@@ -41,10 +41,12 @@ class CartListViewModel(
     }
 
     fun incrementQuantity(cartModel: CartModel) {
+        if (cartModel.quantity == 10) return
         updateCartItemQuantity(cartModel.copy(quantity = cartModel.quantity + 1))
     }
 
     fun decrementQuantity(cartModel: CartModel) {
+        if (cartModel.quantity == 1) return
         updateCartItemQuantity(cartModel.copy(quantity = cartModel.quantity - 1))
     }
 

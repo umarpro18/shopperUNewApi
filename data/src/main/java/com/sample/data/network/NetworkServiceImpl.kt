@@ -2,10 +2,11 @@ package com.sample.data.network
 
 import com.sample.data.model.AddToCartRequest
 import com.sample.data.model.CartListResponse
-import com.sample.data.model.CartModelData
+import com.sample.data.model.CartSummaryResponse
 import com.sample.data.model.ProductListResponse
 import com.sample.domain.model.CartListModel
 import com.sample.domain.model.CartModel
+import com.sample.domain.model.CartSummaryModel
 import com.sample.domain.model.CategoryListModel
 import com.sample.domain.model.ProductListModel
 import com.sample.domain.model.request.CartRequestModel
@@ -94,6 +95,17 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
             method = HttpMethod.Delete,
             mapper = { cartModel: CartListResponse ->
                 cartModel.toCartList()
+            }
+        )
+    }
+
+    override suspend fun getCartSummary(userId: Int): ResultWrapper<CartSummaryModel> {
+        val url = "$baseUrl/checkout/${userId}/summary"
+        return makeHttpRequest(
+            url = url,
+            method = HttpMethod.Get,
+            mapper = { cartSummary: CartSummaryResponse ->
+                cartSummary.toCartSummary()
             }
         )
     }

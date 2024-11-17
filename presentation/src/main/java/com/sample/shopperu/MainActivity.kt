@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.sample.shopperu.navigation.CartScreen
+import com.sample.shopperu.navigation.CartSummaryRoute
 import com.sample.shopperu.navigation.HomeScreen
 import com.sample.shopperu.navigation.ProductDetailRoute
 import com.sample.shopperu.navigation.ProfileScreen
@@ -39,6 +39,7 @@ import com.sample.shopperu.navigation.productNavType
 import com.sample.shopperu.ui.feature.cart.CartListScreen
 import com.sample.shopperu.ui.feature.home.HomeScreen
 import com.sample.shopperu.ui.feature.product_detail.ProductDetailScreen
+import com.sample.shopperu.ui.feature.summary.CartSummaryScreen
 import com.sample.shopperu.ui.theme.ShopperUTheme
 import com.sample.shopperu.uimodel.UiProductModel
 import kotlin.reflect.typeOf
@@ -80,9 +81,12 @@ class MainActivity : ComponentActivity() {
                                 shouldShowBottomBar.value = true
                             }
                             composable<CartScreen> {
-                                CartListScreen()
-                                shouldShowBottomBar.value = true
+                                CartListScreen(onCheckOutClick = {
+                                    navController.navigate(CartSummaryRoute)
+                                    shouldShowBottomBar.value = false
+                                })
                             }
+
                             composable<ProfileScreen> {
                                 Box(
                                     modifier = Modifier
@@ -98,6 +102,10 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 val arguments = it.toRoute<ProductDetailRoute>()
                                 ProductDetailScreen(arguments.product)
+                                shouldShowBottomBar.value = false
+                            }
+                            composable<CartSummaryRoute> {
+                                CartSummaryScreen()
                                 shouldShowBottomBar.value = false
                             }
                         }

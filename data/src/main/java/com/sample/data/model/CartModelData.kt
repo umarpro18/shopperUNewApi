@@ -2,7 +2,6 @@ package com.sample.data.model
 
 import com.sample.domain.model.CartModel
 import kotlinx.serialization.Serializable
-import kotlin.Int
 
 @Serializable
 data class CartModelData(
@@ -10,7 +9,7 @@ data class CartModelData(
     val productId: Int,
     val productName: String,
     val price: Double,
-    val imageUrl: String,
+    val imageUrl: String? = null,
     val quantity: Int
 ) {
     fun toCart() = CartModel(
