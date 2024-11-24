@@ -1,16 +1,22 @@
 package com.sample.shopperu.ui.feature.summary
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,10 +27,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sample.domain.model.CartModel
 import com.sample.domain.model.CartSummaryModel
 import com.sample.shopperu.R
@@ -105,39 +114,76 @@ fun CartSummaryContent(
 
         val showSummaryData = (!loading && error == null)
 
-        if (showSummaryData) cartSummaryModel?.let { CartSummaryData(it) }
-
-        if (loading) {
-            LoadingContent()
+        if (showSummaryData) cartSummaryModel?.let {
+            Column {
+                AddressBar("123, Main Street, London, UK", onClick = {})
+                Spacer(modifier = Modifier.size(8.dp))
+                CartSummaryData(it)
+            }
         }
+    }
 
-        if (error != null) {
-            ErrorContent(error)
-        }
+    if (loading) {
+        LoadingContent()
+    }
+
+    if (error != null) {
+        ErrorContent(error)
     }
 }
 
 @Composable
 fun CartSummaryData(cartSummaryModel: CartSummaryModel) {
-    LazyColumn {
-        item {
-            Text(text = "Products", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
-        }
-
-        items(cartSummaryModel.data.items) { cartItem ->
-            ProductRow(cartItem)
-        }
-
-        item {
-            Column {
-                AmountRow("Items", cartSummaryModel.data.items.size.toDouble())
-                AmountRow("Subtotal", cartSummaryModel.data.subtotal)
-                AmountRow("Tax", cartSummaryModel.data.tax)
-                AmountRow("Shipping", cartSummaryModel.data.shipping)
-                AmountRow("Discount", cartSummaryModel.data.discount)
-                Spacer(modifier = Modifier.padding(8.dp))
-                AmountRow("Total", cartSummaryModel.data.total)
+    Box(
+        modifier = Modifier.fillMaxSize() // Ensures the Box takes the entire screen space
+    ) {
+        // Background for content (if needed)
+        LazyColumn(
+            modifier = Modifier
+                .background(
+                    color = Color.LightGray.copy(alpha = 0.4f),
+                    shape = RoundedCornerShape(24.dp),
+                )
+                .padding(16.dp)
+                .wrapContentHeight()
+                .align(Alignment.TopStart) // Aligns LazyColumn to the top of the Box
+        ) {
+            item {
+                Text(
+                    text = "Order Summary",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                )
             }
+
+            items(cartSummaryModel.data.items) { cartItem ->
+                ProductRow(cartItem)
+            }
+
+            item {
+                Column {
+                    AmountRow("Items", cartSummaryModel.data.items.size.toDouble())
+                    AmountRow("Subtotal", cartSummaryModel.data.subtotal)
+                    AmountRow("Tax", cartSummaryModel.data.tax)
+                    AmountRow("Shipping", cartSummaryModel.data.shipping)
+                    AmountRow("Discount", cartSummaryModel.data.discount)
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    AmountRow("Total", cartSummaryModel.data.total)
+                }
+            }
+        }
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .align(Alignment.BottomCenter), // Aligns the button at the bottom
+            onClick = { },
+            shape = RoundedCornerShape(24.dp),
+        ) {
+            Text(
+                text = "Confirm Order",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+            )
         }
     }
 }
@@ -177,12 +223,41 @@ fun AmountRow(title: String, amount: Double) {
     }
 }
 
+@Composable
+fun AddressBar(address: String, onClick: () -> Unit) {
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+        .clip(RoundedCornerShape(24.dp))
+        .padding(8.dp)
+        .clickable { onClick.invoke() }) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_address),
+            contentDescription = null,
+            contentScale = ContentScale.Inside,
+            modifier = Modifier.size(40.dp),
+        )
+        Spacer(modifier = Modifier.size(8.dp))
+        Column {
+            Text(
+                text = "Shipping Address",
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 16.sp
+            )
+            Text(
+                text = address,
+                style = MaterialTheme.typography.bodySmall,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+        }
+    }
+}
 
 @Composable
 fun LoadingContent() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         CircularProgressIndicator(
             modifier = Modifier
@@ -195,8 +270,7 @@ fun LoadingContent() {
 @Composable
 fun ErrorContent(error: String) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Text(
             text = error,

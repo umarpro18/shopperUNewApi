@@ -129,7 +129,7 @@ fun CartContent(
                 enter = fadeIn(),
                 modifier = Modifier.weight(1f)
             ) {
-                LazyColumn(modifier = Modifier.padding(8.dp)) {
+                LazyColumn(modifier = Modifier.padding(8.dp).background(color = Color.LightGray)) {
                     items(cartList) { item ->
                         CartItem(
                             item,
