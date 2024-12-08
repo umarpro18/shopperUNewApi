@@ -80,7 +80,7 @@ fun UserAddressScreen(navController: NavController, userAddressModel: UserAddres
                 val previousBackStack = navController.previousBackStackEntry
                 previousBackStack?.savedStateHandle?.set(USER_ADDRESS_KEY, addressData)
                 navController.popBackStack()
-            }, modifier = Modifier.fillMaxWidth(),
+            }, modifier = Modifier.fillMaxWidth().padding(8.dp),
             enabled = addressLine.value.isNotEmpty() && country.value.isNotEmpty()
         ) {
             Text(text = "Save & Close")

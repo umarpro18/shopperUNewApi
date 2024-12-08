@@ -141,7 +141,7 @@ fun CartSummaryContent(
         if (showSummaryData) cartSummaryModel?.let {
             Column {
                 AddressBar(
-                    userAddress.value.toString(),
+                    userAddress.value?.toString() ?: "Please add one" ,
                     onClick = {
                         navController.navigate(
                             UserAddressRoute(
