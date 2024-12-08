@@ -1,5 +1,6 @@
 package com.sample.shopperu.ui.feature.summary
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,15 +36,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.sample.domain.model.CartModel
 import com.sample.domain.model.CartSummaryModel
 import com.sample.shopperu.R
+import com.sample.shopperu.navigation.UserAddressRoute
+import com.sample.shopperu.navigation.UserAddressRouteWrapper
+import com.sample.shopperu.ui.feature.user_address.USER_ADDRESS_KEY
+import com.sample.shopperu.uimodel.UserAddressModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CartSummaryScreen(cartSummaryViewModel: CartSummaryViewModel = koinViewModel()) {
+fun CartSummaryScreen(
+    navController: NavController,
+    cartSummaryViewModel: CartSummaryViewModel = koinViewModel()
+) {
     val uiState = cartSummaryViewModel.uiState.collectAsState()
 
+    val addressData = remember {
+        mutableStateOf<UserAddressModel?>(null)
+    }
     val cartSummary = remember {
         mutableStateOf<CartSummaryModel?>(null)
     }
@@ -51,6 +64,13 @@ fun CartSummaryScreen(cartSummaryViewModel: CartSummaryViewModel = koinViewModel
     }
     val error = remember {
         mutableStateOf<String?>(null)
+    }
+
+    LaunchedEffect(navController) {
+        val savedState = navController.currentBackStackEntry?.savedStateHandle
+        savedState?.getStateFlow(USER_ADDRESS_KEY, addressData.value)?.collect { userAddress ->
+            addressData.value = userAddress
+        }
     }
 
     LaunchedEffect(uiState.value) {
@@ -74,6 +94,8 @@ fun CartSummaryScreen(cartSummaryViewModel: CartSummaryViewModel = koinViewModel
         }
     }
     CartSummaryContent(
+        navController,
+        addressData,
         cartSummary.value,
         loading.value,
         error.value,
@@ -82,6 +104,8 @@ fun CartSummaryScreen(cartSummaryViewModel: CartSummaryViewModel = koinViewModel
 
 @Composable
 fun CartSummaryContent(
+    navController: NavController,
+    userAddress: MutableState<UserAddressModel?>,
     cartSummaryModel: CartSummaryModel?,
     loading: Boolean,
     error: String?,
@@ -116,7 +140,15 @@ fun CartSummaryContent(
 
         if (showSummaryData) cartSummaryModel?.let {
             Column {
-                AddressBar("123, Main Street, London, UK", onClick = {})
+                AddressBar(
+                    userAddress.value.toString(),
+                    onClick = {
+                        navController.navigate(
+                            UserAddressRoute(
+                                userAddressRouteWrapper = UserAddressRouteWrapper(userAddressModel = userAddress.value)
+                            )
+                        )
+                    })
                 Spacer(modifier = Modifier.size(8.dp))
                 CartSummaryData(it)
             }

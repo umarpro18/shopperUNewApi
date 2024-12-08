@@ -35,11 +35,15 @@ import com.sample.shopperu.navigation.CartSummaryRoute
 import com.sample.shopperu.navigation.HomeScreen
 import com.sample.shopperu.navigation.ProductDetailRoute
 import com.sample.shopperu.navigation.ProfileScreen
+import com.sample.shopperu.navigation.UserAddressRoute
+import com.sample.shopperu.navigation.UserAddressRouteWrapper
 import com.sample.shopperu.navigation.productNavType
+import com.sample.shopperu.navigation.userAddressNavType
 import com.sample.shopperu.ui.feature.cart.CartListScreen
 import com.sample.shopperu.ui.feature.home.HomeScreen
 import com.sample.shopperu.ui.feature.product_detail.ProductDetailScreen
 import com.sample.shopperu.ui.feature.summary.CartSummaryScreen
+import com.sample.shopperu.ui.feature.user_address.UserAddressScreen
 import com.sample.shopperu.ui.theme.ShopperUTheme
 import com.sample.shopperu.uimodel.UiProductModel
 import kotlin.reflect.typeOf
@@ -105,7 +109,17 @@ class MainActivity : ComponentActivity() {
                                 shouldShowBottomBar.value = false
                             }
                             composable<CartSummaryRoute> {
-                                CartSummaryScreen()
+                                CartSummaryScreen(navController)
+                                shouldShowBottomBar.value = false
+                            }
+                            composable<UserAddressRoute>(
+                                typeMap = mapOf(typeOf<UserAddressRouteWrapper>() to userAddressNavType)
+                            ) {
+                                val arguments = it.toRoute<UserAddressRoute>()
+                                UserAddressScreen(
+                                    navController = navController,
+                                    userAddressModel = arguments.userAddressRouteWrapper.userAddressModel
+                                )
                                 shouldShowBottomBar.value = false
                             }
                         }

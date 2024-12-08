@@ -17,3 +17,6 @@ data class ProductDetailRoute(val product: UiProductModel)
 
 @Serializable
 object CartSummaryRoute
+
+@Serializable
+data class UserAddressRoute(val userAddressRouteWrapper: UserAddressRouteWrapper)
