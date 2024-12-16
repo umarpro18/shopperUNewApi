@@ -1,9 +1,9 @@
 package com.sample.shopperu.ui.feature.summary
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +39,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sample.domain.model.CartModel
 import com.sample.domain.model.CartSummaryModel
+import com.sample.shopperu.BottomNavItem
+import com.sample.shopperu.BottomNavigationBar
 import com.sample.shopperu.R
+import com.sample.shopperu.navigation.HomeScreen
 import com.sample.shopperu.navigation.UserAddressRoute
 import com.sample.shopperu.navigation.UserAddressRouteWrapper
 import com.sample.shopperu.ui.feature.user_address.USER_ADDRESS_KEY
@@ -58,6 +61,9 @@ fun CartSummaryScreen(
     }
     val cartSummary = remember {
         mutableStateOf<CartSummaryModel?>(null)
+    }
+    val orderSuccessId = remember {
+        mutableStateOf<Long?>(null)
     }
     val loading = remember {
         mutableStateOf(false)
@@ -91,6 +97,12 @@ fun CartSummaryScreen(
                 loading.value = false
                 error.value = (uiState.value as CartSummaryScreenUIEvents.Error).message
             }
+
+            is CartSummaryScreenUIEvents.PlaceOrder -> {
+                orderSuccessId.value = (uiState.value as CartSummaryScreenUIEvents.PlaceOrder).orderId
+                loading.value = false
+                error.value = null
+            }
         }
     }
     CartSummaryContent(
@@ -99,6 +111,8 @@ fun CartSummaryScreen(
         cartSummary.value,
         loading.value,
         error.value,
+        orderSuccessId.value,
+        cartSummaryViewModel
     )
 }
 
@@ -109,6 +123,8 @@ fun CartSummaryContent(
     cartSummaryModel: CartSummaryModel?,
     loading: Boolean,
     error: String?,
+    orderSuccessId: Long?,
+    cartSummaryViewModel: CartSummaryViewModel
 ) {
 
     Column(
@@ -141,7 +157,7 @@ fun CartSummaryContent(
         if (showSummaryData) cartSummaryModel?.let {
             Column {
                 AddressBar(
-                    userAddress.value?.toString() ?: "Please add one" ,
+                    userAddress.value?.toString() ?: "Please add one",
                     onClick = {
                         navController.navigate(
                             UserAddressRoute(
@@ -150,7 +166,22 @@ fun CartSummaryContent(
                         )
                     })
                 Spacer(modifier = Modifier.size(8.dp))
-                CartSummaryData(it)
+                CartSummaryData(it, cartSummaryViewModel, userAddress)
+            }
+        }
+    }
+
+    if (orderSuccessId != null) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(painter = painterResource(R.drawable.ic_bag), contentDescription = null)
+            Text(text = "Order Placed: $orderSuccessId", style = MaterialTheme.typography.titleMedium)
+
+            Button(onClick = {navController.popBackStack(HomeScreen, inclusive = true)}) {
+                Text(text = "Continue Shopping", style = MaterialTheme.typography.titleSmall)
             }
         }
     }
@@ -165,7 +196,11 @@ fun CartSummaryContent(
 }
 
 @Composable
-fun CartSummaryData(cartSummaryModel: CartSummaryModel) {
+fun CartSummaryData(
+    cartSummaryModel: CartSummaryModel,
+    cartSummaryViewModel: CartSummaryViewModel,
+    userAddress: MutableState<UserAddressModel?>
+) {
     Box(
         modifier = Modifier.fillMaxSize() // Ensures the Box takes the entire screen space
     ) {
@@ -209,8 +244,9 @@ fun CartSummaryData(cartSummaryModel: CartSummaryModel) {
                 .fillMaxWidth()
                 .height(48.dp)
                 .align(Alignment.BottomCenter), // Aligns the button at the bottom
-            onClick = { },
+            onClick = { userAddress.value?.let { cartSummaryViewModel.placeOrder(userAddressModel = it) } },
             shape = RoundedCornerShape(24.dp),
+            enabled = userAddress.value != null
         ) {
             Text(
                 text = "Confirm Order",

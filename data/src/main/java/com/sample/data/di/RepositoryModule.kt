@@ -2,9 +2,11 @@ package com.sample.data.di
 
 import com.sample.data.repository.CartRepositoryImpl
 import com.sample.data.repository.CategoriesRepositoryImpl
+import com.sample.data.repository.OrderRepositoryImpl
 import com.sample.data.repository.ProductRepositoryImpl
 import com.sample.domain.repository.CartRepository
 import com.sample.domain.repository.CategoriesRepository
+import com.sample.domain.repository.OrderRepository
 import com.sample.domain.repository.ProductRepository
 import org.koin.dsl.module
 
@@ -19,5 +21,9 @@ val repositoryModule = module {
 
     single<CartRepository> {
         CartRepositoryImpl(get())
+    }
+
+    single<OrderRepository> {
+        OrderRepositoryImpl(get())
     }
 }

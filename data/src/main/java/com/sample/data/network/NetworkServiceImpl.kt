@@ -1,9 +1,12 @@
 package com.sample.data.network
 
 import com.sample.data.model.AddToCartRequest
+import com.sample.data.model.AddressDataModelRequest
 import com.sample.data.model.CartListResponse
 import com.sample.data.model.CartSummaryResponse
+import com.sample.data.model.PlaceOrderResponse
 import com.sample.data.model.ProductListResponse
+import com.sample.domain.model.AddressDomainModel
 import com.sample.domain.model.CartListModel
 import com.sample.domain.model.CartModel
 import com.sample.domain.model.CartSummaryModel
@@ -106,6 +109,19 @@ class NetworkServiceImpl(val client: HttpClient) : NetworkService {
             method = HttpMethod.Get,
             mapper = { cartSummary: CartSummaryResponse ->
                 cartSummary.toCartSummary()
+            }
+        )
+    }
+
+    override suspend fun placeOrder(address: AddressDomainModel, userId: Int): ResultWrapper<Long> {
+        val url = "$baseUrl/orders/${userId}"
+        val dataModel = AddressDataModelRequest.requestAddressModel(address)
+        return makeHttpRequest(
+            url = url,
+            method = HttpMethod.Post,
+            body = dataModel,
+            mapper = { placeOrder: PlaceOrderResponse ->
+                placeOrder.data.id
             }
         )
     }
