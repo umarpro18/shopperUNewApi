@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.sample.shopperu.navigation.BottomNavRoute
 import com.sample.shopperu.navigation.CartScreen
 import com.sample.shopperu.navigation.CartSummaryRoute
 import com.sample.shopperu.navigation.HomeScreen
@@ -46,6 +47,7 @@ import com.sample.shopperu.ui.feature.summary.CartSummaryScreen
 import com.sample.shopperu.ui.feature.user_address.UserAddressScreen
 import com.sample.shopperu.ui.theme.ShopperUTheme
 import com.sample.shopperu.uimodel.UiProductModel
+import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
@@ -173,8 +175,7 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
-
-sealed class BottomNavItem(val route: Any, val title: String, val icon: Int) {
+sealed class BottomNavItem(val route: BottomNavRoute, val title: String, val icon: Int) {
     object Home : BottomNavItem(HomeScreen, "Home", R.drawable.ic_home)
     object Cart : BottomNavItem(CartScreen, "Cart", R.drawable.ic_cart)
     object Profile : BottomNavItem(ProfileScreen, "Profile", R.drawable.ic_profile_img)

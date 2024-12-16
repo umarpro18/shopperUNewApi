@@ -39,8 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sample.domain.model.CartModel
 import com.sample.domain.model.CartSummaryModel
-import com.sample.shopperu.BottomNavItem
-import com.sample.shopperu.BottomNavigationBar
 import com.sample.shopperu.R
 import com.sample.shopperu.navigation.HomeScreen
 import com.sample.shopperu.navigation.UserAddressRoute
@@ -91,11 +89,21 @@ fun CartSummaryScreen(
                 error.value = null
                 val data = (uiState.value as CartSummaryScreenUIEvents.Success).cartSummaryData
                 cartSummary.value = data
+                orderSuccessId.value = null
             }
 
             is CartSummaryScreenUIEvents.Error -> {
                 loading.value = false
                 error.value = (uiState.value as CartSummaryScreenUIEvents.Error).message
+                orderSuccessId.value = null
+            }
+
+            is CartSummaryScreenUIEvents.PlaceOrder -> {
+                orderSuccessId.value =
+                    (uiState.value as CartSummaryScreenUIEvents.PlaceOrder).orderId
+                loading.value = false
+                error.value = null
+                cartSummary.value = null
             }
 
             is CartSummaryScreenUIEvents.PlaceOrder -> {
@@ -178,9 +186,12 @@ fun CartSummaryContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(painter = painterResource(R.drawable.ic_bag), contentDescription = null)
-            Text(text = "Order Placed: $orderSuccessId", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = "Order Placed: $orderSuccessId",
+                style = MaterialTheme.typography.titleMedium
+            )
 
-            Button(onClick = {navController.popBackStack(HomeScreen, inclusive = true)}) {
+            Button(onClick = { navController.popBackStack(HomeScreen, inclusive = false) }) {
                 Text(text = "Continue Shopping", style = MaterialTheme.typography.titleSmall)
             }
         }

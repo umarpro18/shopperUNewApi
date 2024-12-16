@@ -3,14 +3,19 @@ package com.sample.shopperu.navigation
 import com.sample.shopperu.uimodel.UiProductModel
 import kotlinx.serialization.Serializable
 
+// A common base class for navigation routes
 @Serializable
-object HomeScreen
+sealed class BottomNavRoute
+
+// Define routes as serializable objects
+@Serializable
+object HomeScreen : BottomNavRoute()
 
 @Serializable
-object CartScreen
+object CartScreen : BottomNavRoute()
 
 @Serializable
-object ProfileScreen
+object ProfileScreen : BottomNavRoute()
 
 @Serializable
 data class ProductDetailRoute(val product: UiProductModel)
