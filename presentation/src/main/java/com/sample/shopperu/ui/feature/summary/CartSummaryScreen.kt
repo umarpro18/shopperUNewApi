@@ -105,12 +105,6 @@ fun CartSummaryScreen(
                 error.value = null
                 cartSummary.value = null
             }
-
-            is CartSummaryScreenUIEvents.PlaceOrder -> {
-                orderSuccessId.value = (uiState.value as CartSummaryScreenUIEvents.PlaceOrder).orderId
-                loading.value = false
-                error.value = null
-            }
         }
     }
     CartSummaryContent(
@@ -181,7 +175,9 @@ fun CartSummaryContent(
 
     if (orderSuccessId != null) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
