@@ -2,7 +2,8 @@ name: CI with Custom Docker Runner
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
