@@ -1,0 +1,26 @@
+name: CI with Custom Docker Runner
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/umarpro18/my-um-custom-runner:latest
+      credentials:
+        username: ${{ secrets.GHCR_USERNAME }}
+        password: ${{ secrets.GHCR_TOKEN }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show container environment
+        run: |
+          echo "Running inside custom runner container"
+          uname -a
+          cat /etc/os-release
+          java -version || echo "Java not found"
+          echo "✅ Done"
