@@ -12,8 +12,8 @@ jobs:
     container:
       image: ghcr.io/umarpro18/my-um-custom-runner:latest
       credentials:
-        username: ${{ secrets.GHCR_USERNAME }}
-        password: ${{ secrets.GHCR_TOKEN }}
+        username: umarpro18
+        password: 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
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
